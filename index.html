@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=1200"/>
+<title>MonoFlux</title>
+<style>
+:root {
+  --fg:  #e8e6f0;
+  --fg2: #9896a4;
+  --fg3: #5a5862;
+  --s0:  #1a191f;
+  --s1:  #222128;
+  --s2:  #2a2931;
+  --s3:  #32303c;
+  --bd:  #38363f;
+  --acc-m: #7ec8e3;
+  --acc-h: #e8a44a;
+  --acc-f: #9d7fe8;
+  --orb-inner: #1a0840;
+  --orb-glow:  #7040e8;
+}
+[data-theme="light"] {
+  --fg:  #1a1820;
+  --fg2: #3a3848;
+  --fg3: #7a7888;
+  --s0: #e8e6f0;
+  --s1: #dddbe6;
+  --s2: #d4d2dc;
+  --s3: #cbc9d2;
+  --bd: #b8b6c2;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background-color: #1a191f;
+  font-family: Arial, Helvetica, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+* { transition: color 0.4s ease; }
+button, a { transition: color 0.4s ease, background-color 0.15s, border-color 0.15s; }
+#top-bar, #preset-bar, #preset-browser, #adv-panel,
+.module-header, .mod-adv, .module { transition: background-color 0.4s ease, border-color 0.4s ease; }
+
+#app {
+  width: 1200px;
+  height: 720px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* TOP BAR */
+#top-bar {
+  height: 48px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  background: var(--s1);
+  border-bottom: 1px solid var(--bd);
+}
+#logo-wrap { flex-shrink: 0; display: flex; align-items: center; }
+.logo-text {
+  font-family: 'Futura', 'Century Gothic', 'Trebuchet MS', Arial, sans-serif;
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  background: linear-gradient(175deg, #ffffff 0%, #d0d0e0 22%, #f2f2ff 44%, #8888a0 68%, #d4d4e8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.9));
+  transition: none;
+}
+#meters-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 16px;
+}
+.meter-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.meter-label {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--fg3);
+  text-transform: uppercase;
+}
+.meter-channels { display: flex; gap: 2px; }
+.meter-canvas { display: block; touch-action: none; }
+
+#top-bar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.top-btn {
+  height: 26px;
+  padding: 0 10px;
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: 3px;
+  color: var(--fg2);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+.top-btn:hover { background: var(--s3); color: var(--fg); }
+.top-btn.active {
+  background: var(--s3);
+  color: var(--fg);
+  border-color: var(--fg3);
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.4);
+}
+.icon-btn-top {
+  width: 28px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: 3px;
+  color: var(--fg2);
+  font-size: 13px;
+  cursor: pointer;
+}
+.icon-btn-top:hover { background: var(--s3); color: var(--fg); }
+
+/* PRESET BAR */
+#preset-bar {
+  height: 42px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--s1);
+  border-bottom: 1px solid var(--bd);
+  padding: 0 16px;
+}
+#preset-bar-left, #preset-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+#preset-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.icon-btn {
+  width: 28px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: 3px;
+  color: var(--fg2);
+  font-size: 12px;
+  cursor: pointer;
+}
+.icon-btn:hover { background: var(--s3); color: var(--fg); }
+.icon-btn.active { color: var(--acc-f); border-color: var(--acc-f); }
+.preset-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--bd);
+  margin: 0 2px;
+}
+#preset-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+  letter-spacing: 0.02em;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+#preset-name:hover { color: var(--acc-f); }
+#preset-name.modified::after { content: '*'; color: var(--acc-f); }
+.preset-arrows { display: flex; flex-direction: column; gap: 1px; }
+.preset-arrow {
+  width: 18px;
+  height: 11px;
+  background: none;
+  border: none;
+  color: var(--fg3);
+  font-size: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+.preset-arrow:hover { color: var(--fg); }
+.ab-btn {
+  width: 24px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: 3px;
+  color: var(--fg3);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ab-btn:hover { background: var(--s3); color: var(--fg); }
+.ab-btn.active { background: var(--s3); color: var(--acc-f); border-color: var(--acc-f); }
+.ab-sep { color: var(--fg3); font-size: 11px; }
+.ab-copy {
+  height: 22px;
+  padding: 0 7px;
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: 3px;
+  color: var(--fg3);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ab-copy:hover { background: var(--s3); color: var(--fg); }
+
+/* PRESET BROWSER */
+#preset-browser {
+  flex-shrink: 0;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.28s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease;
+  background: var(--s0);
+  border-bottom: 1px solid var(--bd);
+}
+#preset-browser.open { max-height: 80px; opacity: 1; }
+#browser-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+}
+#browser-search {
+  height: 24px;
+  width: 150px;
+  flex-shrink: 0;
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: 3px;
+  color: var(--fg);
+  font-size: 11px;
+  padding: 0 8px;
+  outline: none;
+}
+#browser-search::placeholder { color: var(--fg3); }
+#browser-search:focus { border-color: var(--acc-f); }
+#browser-pills { display: flex; gap: 4px; flex-wrap: nowrap; }
+.pill {
+  height: 22px;
+  padding: 0 10px;
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: 11px;
+  color: var(--fg3);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.pill:hover { background: var(--s3); color: var(--fg2); }
+.pill.active { background: var(--s3); color: var(--acc-f); border-color: var(--acc-f); }
+#browser-breadcrumb {
+  margin-left: auto;
+  font-size: 9px;
+  color: var(--fg3);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ADVANCED PANEL */
+#adv-panel {
+  flex-shrink: 0;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.28s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease;
+  background: var(--s1);
+  border-bottom: 1px solid var(--bd);
+}
+#adv-panel.open { max-height: 78px; opacity: 1; }
+#adv-inner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px;
+  flex-wrap: nowrap;
+}
+.adv-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.adv-label {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--fg3);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.adv-divider {
+  width: 1px;
+  height: 44px;
+  background: var(--bd);
+  flex-shrink: 0;
+}
+.seg-group { display: flex; gap: 2px; }
+.seg-btn {
+  height: 22px;
+  padding: 0 8px;
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: 3px;
+  color: var(--fg3);
+  font-size: 9px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.seg-btn:hover { background: var(--s3); color: var(--fg2); }
+.seg-btn.active { background: var(--s3); color: var(--fg); border-color: var(--fg3); }
+.toggle-btn {
+  width: 34px;
+  height: 18px;
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: 9px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.toggle-btn::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  background: var(--fg3);
+  border-radius: 50%;
+  transition: transform 0.2s, background 0.2s;
+}
+.toggle-btn.on { background: var(--acc-f); border-color: var(--acc-f); }
+.toggle-btn.on::after { transform: translateX(16px); background: #fff; }
+
+/* MAIN ROW */
+#main-row {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  overflow: hidden;
+}
+#col-movement {
+  width: 25%;
+  flex-shrink: 0;
+  border-right: 1px solid var(--bd);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--s0);
+  transition: background-color 0.4s ease;
+}
+#col-flux {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 12px 0;
+  overflow: hidden;
+}
+#orb-section {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+#led-section {
+  flex-shrink: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 0 2px;
+  background: var(--s1);
+  border-top: 1px solid var(--bd);
+  border-bottom: 1px solid var(--bd);
+  transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+#col-harmonics {
+  width: 25%;
+  flex-shrink: 0;
+  border-left: 1px solid var(--bd);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--s0);
+  transition: background-color 0.4s ease;
+}
+#col-movement .knob-cell  { --kt: var(--acc-m); }
+#col-harmonics .knob-cell { --kt: var(--acc-h); }
+#macro-bay .knob-cell     { --kt: #c8c8d8; }
+
+/* MODULE */
+.module {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid var(--bd);
+  overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 1px 3px rgba(0,0,0,0.35);
+  background: var(--s0);
+}
+.module:last-child { border-bottom: none; flex: 1; }
+.module-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 10px 4px;
+  background: var(--s2);
+  border-bottom: 1px solid var(--bd);
+  flex-shrink: 0;
+  cursor: default;
+}
+.module-title {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--fg3);
+  text-transform: uppercase;
+}
+.module-adv-btn {
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--fg3);
+  background: none;
+  border: 1px solid var(--bd);
+  border-radius: 2px;
+  padding: 1px 5px;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+}
+.module-adv-btn:hover { color: var(--fg2); border-color: var(--fg3); }
+.module-adv-btn.open { color: var(--acc-f); border-color: var(--acc-f); }
+.module-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 8px 6px 6px;
+  flex-shrink: 0;
+}
+.module-modes {
+  display: flex;
+  gap: 3px;
+  padding: 4px 8px 3px;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+}
+.mode-btn {
+  flex: 1;
+  height: 20px;
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: 2px;
+  color: var(--fg3);
+  font-size: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  padding: 0 4px;
+}
+.mode-btn:hover { background: var(--s3); color: var(--fg2); }
+.mode-btn.active {
+  background: rgba(157,127,232,0.18);
+  color: var(--acc-f);
+  border-color: var(--acc-f);
+}
+#col-harmonics .mode-btn.active {
+  background: rgba(232,164,74,0.15);
+  color: var(--acc-h);
+  border-color: var(--acc-h);
+}
+.mod-adv {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.28s cubic-bezier(0.4,0,0.2,1), opacity 0.22s ease, padding 0.26s ease;
+  background: var(--s0);
+  border-top: 1px solid transparent;
+}
+.mod-adv.open {
+  max-height: 120px;
+  opacity: 1;
+  padding: 7px 6px;
+  border-top-color: var(--bd);
+}
+.adv-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+/* KNOB CELL */
+.knob-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.knob-cell canvas { touch-action: none; display: block; }
+.knob-label {
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--fg3);
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* FLUX CORE */
+#orb-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#flux-orb { display: block; }
+
+#flux-led-bar {
+  width: 100%;
+  max-width: 300px;
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  touch-action: none;
+  padding: 6px 0;
+}
+.led {
+  flex: 1;
+  height: 14px;
+  border-radius: 2px;
+  transition: background 0.06s, box-shadow 0.06s;
+}
+.led.zd    { background: #2b2440; }
+.led.zd.on { background: #6030d8; box-shadow: 0 0 7px #6030d896; }
+.led.zm    { background: #282030; }
+.led.zm.on { background: #9060f0; box-shadow: 0 0 7px #9060f096; }
+.led.zl    { background: #27202a; }
+.led.zl.on { background: #d0a030; box-shadow: 0 0 7px #d0a03096; }
+
+#flux-labels {
+  width: 100%;
+  max-width: 300px;
+  display: flex;
+  justify-content: space-between;
+  flex-shrink: 0;
+  margin-top: -4px;
+}
+.flux-lbl {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg3);
+}
+
+/* MACRO BAY */
+#macro-bay {
+  width: 100%;
+  flex-shrink: 0;
+  border-top: 1px solid var(--bd);
+  padding: 6px 8px 8px;
+  background: var(--s1);
+  transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+#macro-bay-title {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--fg3);
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 8px;
+}
+#macro-row {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+}
+
+/* ORB CSS GRADIENT STOPS */
+.os-center { stop-color: #040308; }
+.os-inner  { stop-color: var(--orb-inner); }
+.os-glow   { stop-color: var(--orb-glow); }
+.os-edge   { stop-color: transparent; }
+.hs-glow   { stop-color: var(--orb-glow); }
+.hs-edge   { stop-color: transparent; }
+
+/* RAYS ANIMATION */
+@keyframes orbSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+#orb-rays { animation: orbSpin 18s linear infinite; transform-origin: 150px 150px; }
+@keyframes rayPulse { 0%,100% { opacity: 0.12; } 50% { opacity: 0.42; } }
+.orb-ray { animation: rayPulse 2.4s ease-in-out infinite; }
+
+/* COLUMN LABELS */
+.col-label {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-align: center;
+  padding: 6px 0 3px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+#col-movement .col-label  { color: var(--acc-m); }
+#col-harmonics .col-label { color: var(--acc-h); }
+
+/* SCROLLABLE COLUMN CONTENT */
+.col-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.col-scroll::-webkit-scrollbar { width: 3px; }
+.col-scroll::-webkit-scrollbar-track { background: transparent; }
+.col-scroll::-webkit-scrollbar-thumb { background: var(--bd); border-radius: 2px; }
+</style>
+</head>
+<body data-theme="dark">
+<div id="app">
+
+  <!-- TOP BAR -->
+  <div id="top-bar">
+    <div id="logo-wrap">
+      <span class="logo-text">monoflux</span>
+    </div>
+
+    <div id="meters-wrap">
+      <div class="meter-group">
+        <div class="meter-label">IN</div>
+        <div class="meter-channels">
+          <canvas class="meter-canvas" id="meter-inL" width="8" height="28"></canvas>
+          <canvas class="meter-canvas" id="meter-inR" width="8" height="28"></canvas>
+        </div>
+      </div>
+      <div class="meter-group">
+        <div class="meter-label">OUT</div>
+        <div class="meter-channels">
+          <canvas class="meter-canvas" id="meter-outL" width="8" height="28"></canvas>
+          <canvas class="meter-canvas" id="meter-outR" width="8" height="28"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div id="top-bar-right">
+      <button class="top-btn" id="btn-hq">HQ</button>
+      <button class="top-btn" id="btn-analog">ANALOG</button>
+      <button class="top-btn" id="btn-adv">ADV</button>
+      <button class="icon-btn-top" id="btn-undo" title="Undo">↩</button>
+      <button class="icon-btn-top" id="btn-redo" title="Redo">↪</button>
+    </div>
+  </div>
+
+  <!-- PRESET BAR -->
+  <div id="preset-bar">
+    <div id="preset-bar-left">
+      <button class="icon-btn" id="btn-browse" title="Browse Presets">≡</button>
+      <button class="icon-btn" id="btn-heart" title="Favourite">♡</button>
+      <div class="preset-divider"></div>
+    </div>
+    <div id="preset-center">
+      <div id="preset-name">Classic Parallel Distortion</div>
+      <div class="preset-arrows">
+        <button class="preset-arrow" id="btn-preset-up">▲</button>
+        <button class="preset-arrow" id="btn-preset-down">▼</button>
+      </div>
+    </div>
+    <div id="preset-bar-right">
+      <div class="preset-divider"></div>
+      <button class="ab-btn active" id="btn-ab-a">A</button>
+      <span class="ab-sep">/</span>
+      <button class="ab-btn" id="btn-ab-b">B</button>
+      <button class="ab-copy" id="btn-ab-copy">A&gt;B</button>
+    </div>
+  </div>
+
+  <!-- PRESET BROWSER -->
+  <div id="preset-browser">
+    <div id="browser-inner">
+      <input type="text" id="browser-search" placeholder="Search presets…"/>
+      <div id="browser-pills">
+        <button class="pill active">All</button>
+        <button class="pill">Ambient</button>
+        <button class="pill">Bass</button>
+        <button class="pill">Drums</button>
+        <button class="pill">Leads</button>
+        <button class="pill">Pads</button>
+        <button class="pill">Vintage</button>
+        <button class="pill">Dark</button>
+        <button class="pill">Light</button>
+      </div>
+      <div id="browser-breadcrumb">Factory / All</div>
+    </div>
+  </div>
+
+  <!-- ADVANCED PANEL -->
+  <div id="adv-panel">
+    <div id="adv-inner">
+      <div class="adv-group">
+        <div class="adv-label">Stereo</div>
+        <div class="seg-group" id="seg-stereo">
+          <button class="seg-btn active" data-val="stereo">Stereo</button>
+          <button class="seg-btn" data-val="ms">M/S</button>
+          <button class="seg-btn" data-val="mono">Mono</button>
+        </div>
+      </div>
+      <div class="adv-divider"></div>
+      <div class="adv-group">
+        <div class="adv-label">Oversample</div>
+        <div class="seg-group" id="seg-os">
+          <button class="seg-btn active" data-val="1x">1x</button>
+          <button class="seg-btn" data-val="2x">2x</button>
+          <button class="seg-btn" data-val="4x">4x</button>
+          <button class="seg-btn" data-val="8x">8x</button>
+        </div>
+      </div>
+      <div class="adv-divider"></div>
+      <div class="adv-group">
+        <div class="adv-label">In Trim</div>
+        <canvas class="knob-cell" id="knob-inTrim" width="40" height="40" style="touch-action:none;"></canvas>
+      </div>
+      <div class="adv-group">
+        <div class="adv-label">Out Trim</div>
+        <canvas class="knob-cell" id="knob-outTrim" width="40" height="40" style="touch-action:none;"></canvas>
+      </div>
+      <div class="adv-divider"></div>
+      <div class="adv-group">
+        <div class="adv-label">DW Lock</div>
+        <div class="toggle-btn" id="tog-dwlock"></div>
+      </div>
+      <div class="adv-group">
+        <div class="adv-label">Δ Phase</div>
+        <div class="toggle-btn" id="tog-phase"></div>
+      </div>
+      <div class="adv-group">
+        <div class="adv-label">Ø Pol</div>
+        <div class="toggle-btn" id="tog-pol"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN ROW -->
+  <div id="main-row">
+
+    <!-- MOVEMENT COLUMN -->
+    <div id="col-movement">
+      <div class="col-label">Movement</div>
+      <div class="col-scroll">
+
+        <!-- CHORUS -->
+        <div class="module">
+          <div class="module-header">
+            <span class="module-title">Chorus</span>
+            <button class="module-adv-btn" data-mod="chorus">ADV</button>
+          </div>
+          <div class="module-main">
+            <div class="knob-cell"><canvas width="54" height="54" data-param="chorus_rate" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Rate</div></div>
+            <div class="knob-cell"><canvas width="54" height="54" data-param="chorus_depth" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Depth</div></div>
+            <div class="knob-cell"><canvas width="54" height="54" data-param="chorus_width" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Width</div></div>
+            <div class="knob-cell"><canvas width="54" height="54" data-param="chorus_mix" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Mix</div></div>
+          </div>
+          <div class="mod-adv" id="adv-chorus">
+            <div class="adv-row">
+              <div class="knob-cell"><canvas width="40" height="40" data-param="chorus_delay" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Delay</div></div>
+              <div class="knob-cell"><canvas width="40" height="40" data-param="chorus_feedback" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Fdbk</div></div>
+              <div class="knob-cell"><canvas width="40" height="40" data-param="chorus_spread" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Sprd</div></div>
+              <div class="knob-cell"><canvas width="40" height="40" data-param="chorus_stereo_offset" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">S.Off</div></div>
+              <div class="knob-cell"><canvas width="40" height="40" data-param="chorus_hi_cut" data-default="0.75" style="touch-action:none;"></canvas><div class="knob-label">Hi Cut</div></div>
+              <div class="knob-cell"><canvas width="40" height="40" data-param="chorus_lo_cut" data-default="0.25" style="touch-action:none;"></canvas><div class="knob-label">Lo Cut</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TREMOLO -->
+        <div class="module">
+          <div class="module-header">
+            <span class="module-title">Tremolo</span>
+            <button class="module-adv-btn" data-mod="tremolo">ADV</button>
+          </div>
+          <div class="module-main">
+            <div class="knob-cell"><canvas width="54" height="54" data-param="tremolo_rate" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Rate</div></div>
+            <div class="knob-cell"><canvas width="54" height="54" data-param="tremolo_depth" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Depth</div></div>
+            <div class="knob-cell"><canvas width="54" height="54" data-param="tremolo_shape" data-default="0.0" style="touch-action:none;"></canvas><div class="knob-label">Shape</div></div>
+            <div class="knob-cell"><canvas width="54" height="54" data-param="tremolo_mix" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Mix</div></div>
+          </div>
+          <div class="mod-adv" id="adv-tremolo">
+            <div class="adv-row">
+              <div class="knob-cell"><canvas width="40" height="40" data-param="tremolo_smoothing" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Smth</div></div>
+              <div class="knob-cell"><canvas width="40" height="40" data-param="tremolo_stereo_phase" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">S.Phs</div></div>
+              <div class="knob-cell"><canvas width="40" height="40" data-param="tremolo_swing" data-default="0.0" style="touch-action:none;"></canvas><div class="knob-label">Swing</div></div>
+              <div class="knob-cell"><canvas width="40" height="40" data-param="tremolo_bias" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Bias</div></div>
+              <div class="knob-cell"><canvas width="40" height="40" data-param="tremolo_width" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Width</div></div>
+              <div class="knob-cell"><canvas width="40" height="40" data-param="tremolo_sync" data-default="0.0" style="touch-action:none;"></canvas><div class="knob-label">Sync</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /col-movement -->
+
+    <!-- FLUX CORE -->
+    <div id="col-flux">
+      <div id="orb-section">
+      <div id="orb-wrap">
+        <svg id="flux-orb" viewBox="0 0 300 300" width="210" height="210" style="pointer-events:none; overflow:visible; flex-shrink:0;">
+          <defs>
+            <filter id="f-halo" x="-80%" y="-80%" width="260%" height="260%">
+              <feGaussianBlur stdDeviation="22"/>
+            </filter>
+            <filter id="f-turb" x="-30%" y="-30%" width="160%" height="160%">
+              <feTurbulence id="orb-turb" type="turbulence"
+                baseFrequency="0.016 0.020" numOctaves="3" seed="7" result="noise"/>
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale="18"
+                xChannelSelector="R" yChannelSelector="G"/>
+            </filter>
+            <radialGradient id="orb-grad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%"   class="os-center"/>
+              <stop offset="35%"  class="os-inner"/>
+              <stop offset="70%"  class="os-glow"/>
+              <stop offset="100%" class="os-edge"/>
+            </radialGradient>
+            <radialGradient id="halo-grad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%"   class="hs-glow"/>
+              <stop offset="100%" class="hs-edge"/>
+            </radialGradient>
+          </defs>
+          <circle cx="150" cy="150" r="130" fill="url(#halo-grad)" filter="url(#f-halo)" opacity="0.55"/>
+          <g id="orb-rays"></g>
+          <circle id="orb-body" cx="150" cy="150" r="98" fill="url(#orb-grad)" filter="url(#f-turb)"/>
+        </svg>
+      </div>
+      </div><!-- /orb-section -->
+
+      <div id="led-section">
+      <div id="flux-led-bar"></div>
+      <div id="flux-labels">
+        <span class="flux-lbl">Dark</span>
+        <span class="flux-lbl">Light</span>
+      </div>
+      </div><!-- /led-section -->
+
+      <div id="macro-bay">
+        <div id="macro-bay-title">Performance</div>
+        <div id="macro-row">
+          <div class="knob-cell"><canvas width="72" height="72" data-param="contrast" data-default="0.5" data-macro="1" style="touch-action:none;"></canvas><div class="knob-label">Contrast</div></div>
+          <div class="knob-cell"><canvas width="72" height="72" data-param="intensity" data-default="0.5" data-macro="1" style="touch-action:none;"></canvas><div class="knob-label">Intensity</div></div>
+          <div class="knob-cell"><canvas width="72" height="72" data-param="focus" data-default="0.5" data-macro="1" style="touch-action:none;"></canvas><div class="knob-label">Focus</div></div>
+          <div class="knob-cell"><canvas width="72" height="72" data-param="influence" data-default="0.5" data-macro="1" style="touch-action:none;"></canvas><div class="knob-label">Influence</div></div>
+        </div>
+      </div>
+    </div><!-- /col-flux -->
+
+    <!-- HARMONICS COLUMN -->
+    <div id="col-harmonics">
+      <div class="col-label">Harmonics</div>
+      <div class="col-scroll">
+
+        <!-- SATURATION -->
+        <div class="module">
+          <div class="module-header">
+            <span class="module-title">Saturation</span>
+            <button class="module-adv-btn" data-mod="saturation">ADV</button>
+          </div>
+          <div class="module-modes" id="modes-sat">
+            <button class="mode-btn active" data-mode="Smooth">Smooth</button>
+            <button class="mode-btn" data-mode="Warm">Warm</button>
+            <button class="mode-btn" data-mode="Tape">Tape</button>
+            <button class="mode-btn" data-mode="Tube">Tube</button>
+            <button class="mode-btn" data-mode="Vintage">Vintage</button>
+          </div>
+          <div class="module-main">
+            <div class="knob-cell"><canvas width="54" height="54" data-param="sat_drive" data-default="0.3" style="touch-action:none;"></canvas><div class="knob-label">Drive</div></div>
+            <div class="knob-cell"><canvas width="54" height="54" data-param="sat_tone" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Tone</div></div>
+            <div class="knob-cell"><canvas width="54" height="54" data-param="sat_character" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Char</div></div>
+            <div class="knob-cell"><canvas width="54" height="54" data-param="sat_mix" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Mix</div></div>
+          </div>
+          <div class="mod-adv" id="adv-saturation">
+            <div class="adv-row">
+              <div class="knob-cell"><canvas width="40" height="40" data-param="sat_bias" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Bias</div></div>
+              <div class="knob-cell"><canvas width="40" height="40" data-param="sat_compression" data-default="0.3" style="touch-action:none;"></canvas><div class="knob-label">Comp</div></div>
+              <div class="knob-cell"><canvas width="40" height="40" data-param="sat_hi_emphasis" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">HiEmph</div></div>
+              <div class="knob-cell"><canvas width="40" height="40" data-param="sat_lo_emphasis" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">LoEmph</div></div>
+              <div class="knob-cell"><canvas width="40" height="40" data-param="sat_dynamics" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Dyn</div></div>
+              <div class="knob-cell"><canvas width="40" height="40" data-param="sat_output" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Out</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DISTORTION -->
+        <div class="module">
+          <div class="module-header">
+            <span class="module-title">Distortion</span>
+            <button class="module-adv-btn" data-mod="distortion">ADV</button>
+          </div>
+          <div class="module-modes" id="modes-dist">
+            <button class="mode-btn active" data-mode="Soft">Soft</button>
+            <button class="mode-btn" data-mode="Crunch">Crunch</button>
+            <button class="mode-btn" data-mode="Aggr">Aggr</button>
+            <button class="mode-btn" data-mode="Fuzz">Fuzz</button>
+            <button class="mode-btn" data-mode="Digital">Digital</button>
+          </div>
+          <div class="module-main">
+            <div class="knob-cell"><canvas width="54" height="54" data-param="dist_gain" data-default="0.3" style="touch-action:none;"></canvas><div class="knob-label">Gain</div></div>
+            <div class="knob-cell"><canvas width="54" height="54" data-param="dist_bite" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Bite</div></div>
+            <div class="knob-cell"><canvas width="54" height="54" data-param="dist_texture" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Tex</div></div>
+            <div class="knob-cell"><canvas width="54" height="54" data-param="dist_mix" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Mix</div></div>
+          </div>
+          <div class="mod-adv" id="adv-distortion">
+            <div class="adv-row">
+              <div class="knob-cell"><canvas width="40" height="40" data-param="dist_focus" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Focus</div></div>
+              <div class="knob-cell"><canvas width="40" height="40" data-param="dist_presence" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Pres</div></div>
+              <div class="knob-cell"><canvas width="40" height="40" data-param="dist_gate" data-default="0.0" style="touch-action:none;"></canvas><div class="knob-label">Gate</div></div>
+              <div class="knob-cell"><canvas width="40" height="40" data-param="dist_compression" data-default="0.3" style="touch-action:none;"></canvas><div class="knob-label">Comp</div></div>
+              <div class="knob-cell"><canvas width="40" height="40" data-param="dist_tone" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Tone</div></div>
+              <div class="knob-cell"><canvas width="40" height="40" data-param="dist_output" data-default="0.5" style="touch-action:none;"></canvas><div class="knob-label">Out</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /col-harmonics -->
+
+  </div><!-- /main-row -->
+</div><!-- /app -->
+
+<script>
+'use strict';
+
+// ─── DSP Bridge (Phase 2: JUCE replaces) ───────────────────────────────────
+function MONOFLUX_PARAM_CHANGED(paramId, value) {}
+
+// ─── State ──────────────────────────────────────────────────────────────────
+const STATE = {
+  fluxValue: 0,
+  theme: 'dark',
+  abState: 'A',
+  presetIndex: 0,
+  presetModified: false,
+  hqEnabled: false,
+  analogEnabled: false,
+  advOpen: false,
+  browserOpen: false,
+  params: {
+    contrast: 0.5, intensity: 0.5, focus: 0.5, influence: 0.5,
+    chorus_rate: 0.5, chorus_depth: 0.5, chorus_width: 0.5, chorus_mix: 0.5,
+    chorus_delay: 0.5, chorus_feedback: 0.5, chorus_spread: 0.5,
+    chorus_stereo_offset: 0.5, chorus_hi_cut: 0.75, chorus_lo_cut: 0.25,
+    tremolo_rate: 0.5, tremolo_depth: 0.5, tremolo_shape: 0.0, tremolo_mix: 0.5,
+    tremolo_smoothing: 0.5, tremolo_stereo_phase: 0.5, tremolo_swing: 0.0,
+    tremolo_bias: 0.5, tremolo_width: 0.5, tremolo_sync: 0.0,
+    sat_drive: 0.3, sat_tone: 0.5, sat_character: 0.5, sat_mix: 0.5,
+    sat_bias: 0.5, sat_compression: 0.3, sat_hi_emphasis: 0.5,
+    sat_lo_emphasis: 0.5, sat_dynamics: 0.5, sat_output: 0.5,
+    dist_gain: 0.3, dist_bite: 0.5, dist_texture: 0.5, dist_mix: 0.5,
+    dist_focus: 0.5, dist_presence: 0.5, dist_gate: 0.0,
+    dist_compression: 0.3, dist_tone: 0.5, dist_output: 0.5,
+    inputTrim: 0.5, outputTrim: 0.5,
+  }
+};
+
+const PRESETS = [
+  'Classic Parallel Distortion',
+  'Dark Velvet Chorus',
+  'Electric Dawn',
+  'Analog Warmth',
+  'Crystal Tremolo',
+  'Deep Space Flux',
+  'Vintage Saturation',
+  'Bright Shimmer',
+];
+
+// ─── Helpers ────────────────────────────────────────────────────────────────
+function lerp(a, b, t) { return a + (b - a) * t; }
+function lerp3(a, b, t) { return [lerp(a[0],b[0],t), lerp(a[1],b[1],t), lerp(a[2],b[2],t)]; }
+function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
+
+// ─── Knob Drawing ───────────────────────────────────────────────────────────
+const DPR = window.devicePixelRatio || 1;
+const K_START = Math.PI * 0.75;
+const K_SWEEP = Math.PI * 1.5;
+const TICK_COUNT = 15;
+
+function drawKnob(canvas, value, accentColor, isMacro) {
+  const cssSize = parseInt(canvas.getAttribute('width'));
+  canvas.width  = cssSize * DPR;
+  canvas.height = cssSize * DPR;
+  canvas.style.width  = cssSize + 'px';
+  canvas.style.height = cssSize + 'px';
+
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.scale(DPR, DPR);
+
+  const cx = cssSize / 2;
+  const cy = cssSize / 2;
+  const sz = cssSize / 2;
+  const bezelR = sz * 0.88;
+  const bodyR  = sz * 0.72;
+  const tickIR = bodyR + 3;
+  const tickLen = isMacro ? 6 : 5;
+  const tickW  = 1.5;
+
+  // Shadow behind bezel
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,0.7)';
+  ctx.shadowBlur  = 8;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 2;
+  ctx.beginPath();
+  ctx.arc(cx, cy, bezelR, 0, Math.PI * 2);
+  ctx.fillStyle = '#111';
+  ctx.fill();
+  ctx.restore();
+
+  // Bezel ring
+  const bGrad = ctx.createLinearGradient(cx - bezelR, cy - bezelR, cx + bezelR, cy + bezelR);
+  bGrad.addColorStop(0,   '#9a98a8');
+  bGrad.addColorStop(0.4, '#3a3848');
+  bGrad.addColorStop(1,   '#6a6878');
+  ctx.beginPath();
+  ctx.arc(cx, cy, bezelR, 0, Math.PI * 2);
+  ctx.strokeStyle = bGrad;
+  ctx.lineWidth = isMacro ? 4 : 3;
+  ctx.stroke();
+
+  // Body gradient
+  let bodyGrad;
+  if (isMacro) {
+    bodyGrad = ctx.createRadialGradient(cx - bodyR*0.25, cy - bodyR*0.3, 0, cx, cy, bodyR);
+    bodyGrad.addColorStop(0,   '#d8d8e0');
+    bodyGrad.addColorStop(0.4, '#9898a8');
+    bodyGrad.addColorStop(1,   '#505060');
+  } else {
+    bodyGrad = ctx.createRadialGradient(cx - bodyR*0.22, cy - bodyR*0.28, 0, cx, cy, bodyR);
+    bodyGrad.addColorStop(0,   '#3c3a48');
+    bodyGrad.addColorStop(0.45,'#1e1d26');
+    bodyGrad.addColorStop(1,   '#0f0e16');
+  }
+  ctx.beginPath();
+  ctx.arc(cx, cy, bodyR, 0, Math.PI * 2);
+  ctx.fillStyle = bodyGrad;
+  ctx.fill();
+
+  // Lighting overlays
+  const hl = ctx.createRadialGradient(cx - bodyR*0.4, cy - bodyR*0.4, 0, cx - bodyR*0.4, cy - bodyR*0.4, bodyR*0.65);
+  hl.addColorStop(0,   'rgba(180,200,255,0.18)');
+  hl.addColorStop(1,   'transparent');
+  ctx.beginPath();
+  ctx.arc(cx, cy, bodyR, 0, Math.PI * 2);
+  ctx.fillStyle = hl;
+  ctx.fill();
+
+  const sh = ctx.createRadialGradient(cx + bodyR*0.4, cy + bodyR*0.4, 0, cx + bodyR*0.4, cy + bodyR*0.4, bodyR*0.65);
+  sh.addColorStop(0,   'rgba(200,110,30,0.14)');
+  sh.addColorStop(1,   'transparent');
+  ctx.beginPath();
+  ctx.arc(cx, cy, bodyR, 0, Math.PI * 2);
+  ctx.fillStyle = sh;
+  ctx.fill();
+
+  // Tick marks
+  const angleStep = K_SWEEP / (TICK_COUNT - 1);
+  const activeCount = Math.round(value * (TICK_COUNT - 1));
+  for (let i = 0; i < TICK_COUNT; i++) {
+    const angle = K_START + i * angleStep;
+    const active = i <= activeCount;
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(angle);
+    ctx.fillStyle = active
+      ? (accentColor + 'cc')
+      : 'rgba(60,58,72,0.75)';
+    ctx.fillRect(tickIR, -tickW * 0.5, tickLen, tickW);
+    ctx.restore();
+  }
+
+  // Pointer
+  const pAngle = K_START + value * K_SWEEP;
+  const pInner = bodyR * 0.22;
+  const pOuter = bodyR * 0.80;
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(pAngle);
+  ctx.beginPath();
+  ctx.moveTo(pInner, 0);
+  ctx.lineTo(pOuter, 0);
+  ctx.strokeStyle = isMacro ? 'rgba(240,240,255,0.96)' : 'rgba(255,255,255,0.92)';
+  ctx.lineWidth = isMacro ? 2.5 : 1.8;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+  ctx.restore();
+
+  // Hub dot
+  ctx.beginPath();
+  ctx.arc(cx, cy, bodyR * 0.09, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.fill();
+}
+
+// ─── Knob Interaction ───────────────────────────────────────────────────────
+function getAccent(canvas) {
+  const cell = canvas.closest('.knob-cell') || canvas.parentElement;
+  const col  = canvas.closest('#col-movement, #col-harmonics, #macro-bay, #adv-panel');
+  if (canvas.dataset.macro) return '#c8c8d8';
+  if (col && col.id === 'col-harmonics') return '#e8a44a';
+  if (col && col.id === 'col-movement')  return '#7ec8e3';
+  return '#9d7fe8';
+}
+
+function initKnob(canvas) {
+  const paramId  = canvas.dataset.param;
+  const defVal   = parseFloat(canvas.dataset.default || '0.5');
+  const isMacro  = !!canvas.dataset.macro;
+  const cssSize  = parseInt(canvas.getAttribute('width'));
+  const accent   = getAccent(canvas);
+
+  let value = (paramId && STATE.params[paramId] !== undefined)
+    ? STATE.params[paramId]
+    : defVal;
+
+  function redraw() {
+    drawKnob(canvas, value, accent, isMacro);
+  }
+  redraw();
+
+  let dragging = false;
+  let startY   = 0;
+  let startVal = 0;
+
+  function onDown(clientY) {
+    dragging = true;
+    startY   = clientY;
+    startVal = value;
+    canvas.setPointerCapture && canvas.setPointerCapture(canvas._ptrid || 1);
+  }
+  function onMove(clientY, shift) {
+    if (!dragging) return;
+    const scale = shift ? 0.0004 : 0.004;
+    value = clamp(startVal + (startY - clientY) * scale, 0, 1);
+    if (paramId) {
+      STATE.params[paramId] = value;
+      MONOFLUX_PARAM_CHANGED(paramId, value);
+    }
+    if (paramId === 'inputTrim' || paramId === 'outputTrim') {
+      STATE.params[paramId] = value;
+    }
+    redraw();
+  }
+  function onUp() { dragging = false; }
+
+  canvas.addEventListener('pointerdown', e => {
+    canvas._ptrid = e.pointerId;
+    canvas.setPointerCapture(e.pointerId);
+    e.preventDefault();
+    onDown(e.clientY);
+  });
+  canvas.addEventListener('pointermove', e => {
+    e.preventDefault();
+    onMove(e.clientY, e.shiftKey);
+  });
+  canvas.addEventListener('pointerup',     onUp);
+  canvas.addEventListener('pointercancel', onUp);
+
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); if (e.touches[0]) onDown(e.touches[0].clientY); }, { passive: false });
+  canvas.addEventListener('touchmove',  e => { e.preventDefault(); if (e.touches[0]) onMove(e.touches[0].clientY, false); }, { passive: false });
+  canvas.addEventListener('touchend',   onUp, { passive: false });
+
+  canvas.addEventListener('dblclick', () => {
+    value = defVal;
+    if (paramId) { STATE.params[paramId] = value; MONOFLUX_PARAM_CHANGED(paramId, value); }
+    redraw();
+  });
+}
+
+function initAllKnobs() {
+  document.querySelectorAll('canvas[data-param]').forEach(initKnob);
+  // Standalone trim knobs in adv panel
+  const inTrim  = document.getElementById('knob-inTrim');
+  const outTrim = document.getElementById('knob-outTrim');
+  if (inTrim) {
+    inTrim.setAttribute('data-param', 'inputTrim');
+    inTrim.setAttribute('data-default', '0.5');
+    initKnob(inTrim);
+  }
+  if (outTrim) {
+    outTrim.setAttribute('data-param', 'outputTrim');
+    outTrim.setAttribute('data-default', '0.5');
+    initKnob(outTrim);
+  }
+}
+
+// ─── LED Bar ────────────────────────────────────────────────────────────────
+const LED_COUNT = 21;
+let ledEls = [];
+
+function buildLEDs() {
+  const bar = document.getElementById('flux-led-bar');
+  for (let i = 0; i < LED_COUNT; i++) {
+    const d = document.createElement('div');
+    d.className = 'led ' + (i < 7 ? 'zd' : i < 14 ? 'zm' : 'zl');
+    bar.appendChild(d);
+    ledEls.push(d);
+  }
+}
+
+function setLEDs(val) {
+  const active = Math.round(val * (LED_COUNT - 1));
+  for (let i = 0; i < LED_COUNT; i++) {
+    if (i <= active) ledEls[i].classList.add('on');
+    else             ledEls[i].classList.remove('on');
+  }
+}
+
+function initLEDBar() {
+  const bar = document.getElementById('flux-led-bar');
+  let dragging = false;
+
+  function setFromX(clientX) {
+    const r = bar.getBoundingClientRect();
+    const f = clamp((clientX - r.left) / r.width, 0, 1);
+    STATE.fluxValue = f;
+    setLEDs(f);
+    applyFlux(f);
+  }
+
+  bar.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    bar.setPointerCapture(e.pointerId);
+    dragging = true;
+    setFromX(e.clientX);
+  });
+  bar.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    e.preventDefault();
+    setFromX(e.clientX);
+  });
+  bar.addEventListener('pointerup',     () => { dragging = false; });
+  bar.addEventListener('pointercancel', () => { dragging = false; });
+
+  bar.addEventListener('touchstart', e => { e.preventDefault(); if (e.touches[0]) setFromX(e.touches[0].clientX); }, { passive: false });
+  bar.addEventListener('touchmove',  e => { e.preventDefault(); if (e.touches[0]) setFromX(e.touches[0].clientX); }, { passive: false });
+  bar.addEventListener('touchend',   () => {}, { passive: false });
+}
+
+// ─── Flux / Theme System ────────────────────────────────────────────────────
+const DARK_BG   = [26, 25, 31];
+const LIGHT_BG  = [240,238,234];
+const ORB_DK_IN = [26,  8, 64];
+const ORB_LT_IN = [42, 20,  0];
+const ORB_DK_GL = [112,64,232];
+const ORB_LT_GL = [240,176, 32];
+
+function applyFlux(f) {
+  const [r,g,b] = lerp3(DARK_BG, LIGHT_BG, f);
+  document.body.style.backgroundColor = 'rgb(' + Math.round(r) + ',' + Math.round(g) + ',' + Math.round(b) + ')';
+
+  const newTheme = f >= 0.5 ? 'light' : 'dark';
+  if (newTheme !== STATE.theme) {
+    STATE.theme = newTheme;
+    document.body.setAttribute('data-theme', newTheme);
+  }
+
+  const root = document.documentElement;
+  const [ir,ig,ib] = lerp3(ORB_DK_IN, ORB_LT_IN, f);
+  const [gr,gg,gb] = lerp3(ORB_DK_GL, ORB_LT_GL, f);
+  root.style.setProperty('--orb-inner', 'rgb(' + Math.round(ir) + ',' + Math.round(ig) + ',' + Math.round(ib) + ')');
+  root.style.setProperty('--orb-glow',  'rgb(' + Math.round(gr) + ',' + Math.round(gg) + ',' + Math.round(gb) + ')');
+
+  FluxOrb.setFlux(f);
+}
+
+// ─── Orb ─────────────────────────────────────────────────────────────────────
+const FluxOrb = (function() {
+  let frameCount = 0;
+  let turbEl = null;
+  let raysEl = null;
+  let seeds = [7, 13, 31, 61, 97];
+  let seedIdx = 0;
+  let freqBase = 0.016;
+
+  function init() {
+    turbEl = document.getElementById('orb-turb');
+    raysEl = document.getElementById('orb-rays');
+    buildRays();
+  }
+
+  function buildRays() {
+    if (!raysEl) return;
+    raysEl.innerHTML = '';
+    const count = 14;
+    for (let i = 0; i < count; i++) {
+      const angle = (i / count) * Math.PI * 2;
+      const r1 = 30 + Math.random() * 20;
+      const r2 = 105 + Math.random() * 38;
+      const x1 = 150 + Math.cos(angle) * r1;
+      const y1 = 150 + Math.sin(angle) * r1;
+      const x2 = 150 + Math.cos(angle) * r2;
+      const y2 = 150 + Math.sin(angle) * r2;
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', x1);
+      line.setAttribute('y1', y1);
+      line.setAttribute('x2', x2);
+      line.setAttribute('y2', y2);
+      line.setAttribute('stroke', 'var(--orb-glow)');
+      line.setAttribute('stroke-width', (0.8 + Math.random() * 1.2).toFixed(1));
+      line.classList.add('orb-ray');
+      line.style.animationDelay = (i * 0.18).toFixed(2) + 's';
+      line.style.animationDuration = (1.8 + Math.random() * 1.4).toFixed(2) + 's';
+      raysEl.appendChild(line);
+    }
+  }
+
+  function tick() {
+    frameCount++;
+    if (frameCount % 4 !== 0) return;
+    if (!turbEl) return;
+    freqBase += (Math.random() - 0.5) * 0.002;
+    freqBase = clamp(freqBase, 0.010, 0.026);
+    const fv = freqBase.toFixed(4);
+    turbEl.setAttribute('baseFrequency', fv + ' ' + (freqBase * 1.25).toFixed(4));
+    if (frameCount % 40 === 0) {
+      seedIdx = (seedIdx + 1) % seeds.length;
+      turbEl.setAttribute('seed', seeds[seedIdx]);
+    }
+  }
+
+  function setFlux(f) {
+    // Ray color updates automatically via CSS custom property
+  }
+
+  return { init, tick, setFlux };
+})();
+
+// ─── Meters ──────────────────────────────────────────────────────────────────
+const SEGS = 16;
+const SEG_COLORS = Array.from({length: SEGS}, (_, i) =>
+  i < 10 ? '#28c860' : i < 13 ? '#d8c040' : '#e83030'
+);
+
+function makeMeterCanvas(id) {
+  const c = document.getElementById(id);
+  if (!c) return null;
+  c.width  = 8 * DPR;
+  c.height = 28 * DPR;
+  c.style.width  = '8px';
+  c.style.height = '28px';
+  return { c, ctx: c.getContext('2d'), val: Math.random() * 0.5 };
+}
+
+function drawMeter(m) {
+  if (!m) return;
+  const ctx = m.ctx;
+  ctx.clearRect(0, 0, m.c.width, m.c.height);
+  const segH = (28 * DPR - (SEGS - 1)) / SEGS;
+  const active = Math.floor(m.val * SEGS);
+  for (let i = 0; i < SEGS; i++) {
+    const y = m.c.height - (i + 1) * (segH + 1) + 1;
+    ctx.fillStyle = i < active ? SEG_COLORS[i] : 'rgba(40,38,50,0.8)';
+    ctx.fillRect(0, y, 8 * DPR, segH);
+  }
+}
+
+// Random-walk meter simulation
+function tickMeters(meters) {
+  meters.forEach(m => {
+    if (!m) return;
+    m.val += (Math.random() - 0.52) * 0.12;
+    m.val = clamp(m.val, 0, 0.92);
+    drawMeter(m);
+  });
+}
+
+// ─── Module ADV Collapse ─────────────────────────────────────────────────────
+function initModuleAdvButtons() {
+  document.querySelectorAll('.module-adv-btn').forEach(btn => {
+    const modId = btn.dataset.mod;
+    const panel = document.getElementById('adv-' + modId);
+    if (!panel) return;
+    btn.addEventListener('click', () => {
+      const open = panel.classList.toggle('open');
+      btn.classList.toggle('open', open);
+    });
+  });
+}
+
+// ─── Segmented Controls ──────────────────────────────────────────────────────
+function initSeg(groupEl) {
+  groupEl.querySelectorAll('.seg-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      groupEl.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+}
+
+// ─── Mode Buttons ────────────────────────────────────────────────────────────
+function initModes(groupEl) {
+  groupEl.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      groupEl.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+}
+
+// ─── Toggle Buttons ──────────────────────────────────────────────────────────
+function initToggle(el) {
+  el.addEventListener('click', () => el.classList.toggle('on'));
+}
+
+// ─── Preset Navigation ───────────────────────────────────────────────────────
+function initPresetNav() {
+  const nameEl = document.getElementById('preset-name');
+  document.getElementById('btn-preset-up').addEventListener('click', () => {
+    STATE.presetIndex = (STATE.presetIndex - 1 + PRESETS.length) % PRESETS.length;
+    nameEl.textContent = PRESETS[STATE.presetIndex];
+    STATE.presetModified = false;
+    nameEl.classList.remove('modified');
+  });
+  document.getElementById('btn-preset-down').addEventListener('click', () => {
+    STATE.presetIndex = (STATE.presetIndex + 1) % PRESETS.length;
+    nameEl.textContent = PRESETS[STATE.presetIndex];
+    STATE.presetModified = false;
+    nameEl.classList.remove('modified');
+  });
+}
+
+// ─── A/B ─────────────────────────────────────────────────────────────────────
+function initAB() {
+  const btnA = document.getElementById('btn-ab-a');
+  const btnB = document.getElementById('btn-ab-b');
+  const copyBtn = document.getElementById('btn-ab-copy');
+  const toggle = (s) => {
+    STATE.abState = s;
+    btnA.classList.toggle('active', s === 'A');
+    btnB.classList.toggle('active', s === 'B');
+    const isAtoB = s === 'A';
+    copyBtn.textContent = isAtoB ? 'A>B' : 'B>A';
+  };
+  btnA.addEventListener('click', () => toggle('A'));
+  btnB.addEventListener('click', () => toggle('B'));
+}
+
+// ─── Browser ─────────────────────────────────────────────────────────────────
+function initBrowser() {
+  const btn    = document.getElementById('btn-browse');
+  const panel  = document.getElementById('preset-browser');
+  const advBtn = document.getElementById('btn-adv');
+  const advPan = document.getElementById('adv-panel');
+
+  btn.addEventListener('click', () => {
+    const open = panel.classList.toggle('open');
+    btn.classList.toggle('active', open);
+    STATE.browserOpen = open;
+    if (open && advPan.classList.contains('open')) {
+      advPan.classList.remove('open');
+      advBtn.classList.remove('active');
+      STATE.advOpen = false;
+    }
+  });
+
+  document.querySelectorAll('#browser-pills .pill').forEach(p => {
+    p.addEventListener('click', () => {
+      document.querySelectorAll('#browser-pills .pill').forEach(x => x.classList.remove('active'));
+      p.classList.add('active');
+      document.getElementById('browser-breadcrumb').textContent = 'Factory / ' + p.textContent;
+    });
+  });
+
+  advBtn.addEventListener('click', () => {
+    const open = advPan.classList.toggle('open');
+    advBtn.classList.toggle('active', open);
+    STATE.advOpen = open;
+    if (open && panel.classList.contains('open')) {
+      panel.classList.remove('open');
+      btn.classList.remove('active');
+      STATE.browserOpen = false;
+    }
+  });
+}
+
+// ─── Top Bar Buttons ─────────────────────────────────────────────────────────
+function initTopBar() {
+  document.getElementById('btn-hq').addEventListener('click', function() {
+    STATE.hqEnabled = !STATE.hqEnabled;
+    this.classList.toggle('active', STATE.hqEnabled);
+  });
+  document.getElementById('btn-analog').addEventListener('click', function() {
+    STATE.analogEnabled = !STATE.analogEnabled;
+    this.classList.toggle('active', STATE.analogEnabled);
+  });
+  document.getElementById('btn-heart').addEventListener('click', function() {
+    this.textContent = this.textContent === '♡' ? '♥' : '♡';
+    this.classList.toggle('active');
+  });
+  document.getElementById('btn-undo').addEventListener('click', () => {});
+  document.getElementById('btn-redo').addEventListener('click', () => {});
+}
+
+// ─── rAF Loop ────────────────────────────────────────────────────────────────
+let meters = [];
+let lastMeterTick = 0;
+
+function mainLoop(ts) {
+  requestAnimationFrame(mainLoop);
+  FluxOrb.tick();
+  if (ts - lastMeterTick > 33) {
+    tickMeters(meters);
+    lastMeterTick = ts;
+  }
+}
+
+// ─── Boot ─────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  buildLEDs();
+  setLEDs(0);
+  initLEDBar();
+  initAllKnobs();
+  initModuleAdvButtons();
+  initSeg(document.getElementById('seg-stereo'));
+  initSeg(document.getElementById('seg-os'));
+  initModes(document.getElementById('modes-sat'));
+  initModes(document.getElementById('modes-dist'));
+  ['tog-dwlock','tog-phase','tog-pol'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) initToggle(el);
+  });
+  initPresetNav();
+  initAB();
+  initBrowser();
+  initTopBar();
+  FluxOrb.init();
+
+  meters = [
+    makeMeterCanvas('meter-inL'),
+    makeMeterCanvas('meter-inR'),
+    makeMeterCanvas('meter-outL'),
+    makeMeterCanvas('meter-outR'),
+  ];
+  meters.forEach(m => { if (m) { m.val = Math.random() * 0.65; drawMeter(m); } });
+
+  requestAnimationFrame(mainLoop);
+});
+</script>
+</body>
+</html>
