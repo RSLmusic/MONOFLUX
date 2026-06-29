@@ -4,16 +4,14 @@ project(MonoFlux VERSION 1.0.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# ── Fetch JUCE 7.0.12 ────────────────────────────────────────────────────────
-include(FetchContent)
-FetchContent_Declare(
-  JUCE
-  GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
-  GIT_TAG        7.0.12
-  GIT_SHALLOW    TRUE
-  GIT_PROGRESS   TRUE
-)
-FetchContent_MakeAvailable(JUCE)
+# ── JUCE 7.0.12 ──────────────────────────────────────────────────────────────
+# Local path when JUCE has already been extracted to /opt/JUCE-7.0.12.
+# For CI / fresh checkouts, set -DJUCE_PATH=/path/to/JUCE on the cmake command,
+# or swap the block below back to FetchContent_Declare (git tag 7.0.12).
+if(NOT DEFINED JUCE_PATH)
+  set(JUCE_PATH "/opt/JUCE-7.0.12")
+endif()
+add_subdirectory("${JUCE_PATH}" "${CMAKE_BINARY_DIR}/JUCE")
 
 # ── webkit2gtk (Linux only) ───────────────────────────────────────────────────
 if(LINUX)
@@ -33,7 +31,8 @@ set_target_properties(MonoFluxAssets PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 
 # ── Plugin target ─────────────────────────────────────────────────────────────
 juce_add_plugin(MonoFlux
-  COMPANY_NAME              "RSL Music"
+  COMPANY_NAME              "RSLMusic"
+  BUNDLE_ID                 "com.rslmusic.monoflux"
   PLUGIN_MANUFACTURER_CODE  Rslm
   PLUGIN_CODE               Mnfx
   FORMATS                   VST3 Standalone

@@ -17,11 +17,11 @@ private:
     class UIWebView : public juce::WebBrowserComponent
     {
     public:
-        explicit UIWebView (MonoFluxEditor& owner)
+        explicit UIWebView (MonoFluxEditor& o)
             : juce::WebBrowserComponent (
                   juce::WebBrowserComponent::Options{}
                       .withKeepPageLoadedWhenBrowserIsHidden()),
-              owner (owner)
+              owner (o)
         {}
 
         // Intercepts juce://param?id=<paramId>&v=<0-1> from JavaScript
