@@ -717,7 +717,10 @@ button { cursor: pointer; }
 </div><!-- /app -->
 <script>
 'use strict';
-function MONOFLUX_PARAM_CHANGED(id, v) {}
+function MONOFLUX_PARAM_CHANGED(id, v) {
+  // Intercepted in C++ via WebBrowserComponent::pageAboutToLoad → returns false
+  window.location = 'juce://param?id=' + encodeURIComponent(id) + '&v=' + encodeURIComponent(v);
+}
 
 const STATE = {
   fluxValue: 0, theme: 'dark', abState: 'A', presetIndex: 0,
@@ -854,7 +857,7 @@ function initAllKnobs(){ document.querySelectorAll('canvas[data-param]').forEach
 function initFluxSlider(){
   const track=document.getElementById('flux-track'), thumb=document.getElementById('flux-thumb');
   let drag=false;
-  function sx(cx){ const r=track.getBoundingClientRect(); const f=clamp((cx-r.left)/r.width,0,1); STATE.fluxValue=f; thumb.style.left=(f*100)+'%'; applyFlux(f); }
+  function sx(cx){ const r=track.getBoundingClientRect(); const f=clamp((cx-r.left)/r.width,0,1); STATE.fluxValue=f; thumb.style.left=(f*100)+'%'; applyFlux(f); MONOFLUX_PARAM_CHANGED('flux_value',f); }
   track.addEventListener('pointerdown',e=>{e.preventDefault();track.setPointerCapture(e.pointerId);drag=true;sx(e.clientX);});
   track.addEventListener('pointermove',e=>{if(!drag)return;e.preventDefault();sx(e.clientX);});
   track.addEventListener('pointerup',()=>{drag=false;}); track.addEventListener('pointercancel',()=>{drag=false;});
@@ -961,6 +964,34 @@ function initTopBar(){
 /* ── rAF loop ─────────────────────────────────── */
 let meters=[], lastMT=0;
 function loop(ts){ requestAnimationFrame(loop); FluxOrb.tick(); if(ts-lastMT>33){ tickMeters(meters); lastMT=ts; } }
+
+/* ── JUCE bridge ─────────────────────────────── */
+// Called by C++ host to set a single knob value
+window.monofluxSetParam = function(pid, val) {
+  val = parseFloat(val);
+  // Flux slider is a special case (no canvas data-param)
+  if (pid === 'flux_value') {
+    STATE.fluxValue = val;
+    const th = document.getElementById('flux-thumb');
+    if (th) th.style.left = (val * 100) + '%';
+    applyFlux(val);
+    return;
+  }
+  if (STATE.params[pid] !== undefined) STATE.params[pid] = val;
+  document.querySelectorAll('canvas[data-param="' + pid + '"]').forEach(function(c) {
+    drawKnob(c, val, getAccent(c), !!c.dataset.macro);
+  });
+};
+// Called once after page load to sync all param values from the host
+window.monofluxSetAllParams = function(json) {
+  Object.keys(json).forEach(function(k) { window.monofluxSetParam(k, json[k]); });
+};
+// Called by 30 Hz timer from C++ to drive real meter levels (dB)
+window.monofluxSetMeters = function(inL, inR, outL, outR) {
+  const toNorm = function(db) { return Math.max(0, Math.min(1, (db + 60) / 60)); };
+  const vals = [inL, inR, outL, outR, inL, inR, outL, outR].map(toNorm);
+  meters.forEach(function(m, i) { if (m && vals[i] !== undefined) { m.val = vals[i]; drawMeter(m); } });
+};
 
 /* ── Boot ─────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded',()=>{
