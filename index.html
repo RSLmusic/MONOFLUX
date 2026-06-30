@@ -13,20 +13,20 @@
       width: 1400px;
       height: 820px;
       flex-shrink: 0;
-      background: url('assets/chassis.png') center center / cover no-repeat;
+      background: url('assets/chassis-cropped.png') center center / cover no-repeat;
     }
     .reactor {
       position: absolute;
-      left: 580px;
-      top: 220px;
-      width: 240px;
-      height: 240px;
+      left: 538px;
+      top: 191px;
+      width: 248px;
+      height: 248px;
       border-radius: 50%;
       overflow: hidden;
       box-shadow:
-        0 0 0 1px rgba(255, 120, 30, 0.25),
-        0 0 32px rgba(255, 100, 20, 0.18),
-        0 0 70px rgba(255, 80, 10, 0.08);
+        0 0 0 1px rgba(255, 120, 30, 0.20),
+        0 0 28px rgba(255, 100, 20, 0.15),
+        0 0 60px rgba(255, 80, 10, 0.07);
       z-index: 10;
     }
     .reactor video {
@@ -41,9 +41,9 @@
       inset: 0;
       border-radius: 50%;
       background: radial-gradient(circle at 50% 50%,
-        transparent 60%,
-        rgba(0, 0, 0, 0.45) 85%,
-        rgba(0, 0, 0, 0.72) 100%);
+        transparent 55%,
+        rgba(0, 0, 0, 0.35) 80%,
+        rgba(0, 0, 0, 0.65) 100%);
       pointer-events: none;
       z-index: 2;
     }
@@ -52,11 +52,21 @@
 <body>
   <div class="chassis">
     <div class="reactor">
-      <video autoplay loop muted playsinline>
-        <source src="assets/reactor.mov" type="video/mp4">
-        <source src="assets/reactor.mov" type="video/quicktime">
+      <video id="rv" autoplay loop muted playsinline preload="auto">
+        <source src="assets/reactor.webm" type="video/webm">
+        <source src="assets/reactor.mp4" type="video/mp4">
       </video>
     </div>
   </div>
+  <script>
+    const v = document.getElementById('rv');
+    function forcePlay() {
+      if (v.paused) v.play().catch(() => {});
+    }
+    v.addEventListener('canplay', forcePlay);
+    v.addEventListener('loadeddata', forcePlay);
+    document.addEventListener('click', forcePlay);
+    forcePlay();
+  </script>
 </body>
 </html>
