@@ -138,13 +138,22 @@
     transition: box-shadow 0.15s ease, transform 0.1s ease;
     filter: none;
   }
+  /* ON = rim unchanged, only center dome appears pressed in via ::after */
   .mf-engage.on {
-    box-shadow:
-      inset 0 3px 7px rgba(0,0,0,0.85),
-      inset 0 1px 3px rgba(0,0,0,0.6),
-      0 0 14px 3px var(--btn-glow, rgba(232,164,74,0.85));
-    transform: scale(0.92) translateY(1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.55), 0 1px 2px rgba(0,0,0,0.4);
+    transform: none;
     filter: none;
+  }
+  .mf-engage.on::after {
+    content: '';
+    position: absolute;
+    inset: 18%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 58%,
+      rgba(0,0,0,0.62) 0%,
+      rgba(0,0,0,0.28) 45%,
+      transparent 70%);
+    pointer-events: none;
   }
 
   /* ── Knob row: 3 across top, 4th centered below ── */
@@ -198,6 +207,8 @@
     height: 100%;
     z-index: 0;
     border-radius: 12px;
+    image-rendering: high-quality;
+    image-rendering: -webkit-optimize-contrast;
   }
   #chassis-light {
     position: absolute; inset: 0; width: 100%; height: 100%;
@@ -206,6 +217,8 @@
     mix-blend-mode: multiply;
     pointer-events: none;
     z-index: 1;
+    image-rendering: high-quality;
+    image-rendering: -webkit-optimize-contrast;
   }
 
 </style>
@@ -509,31 +522,36 @@ const CHASSIS_FRAMES = [
     const b = Math.min(Math.ceil(pos), _imgs.length - 1);
     const blend = pos - a;
 
-    // Sync canvas size to element's display size
+    // Draw at physical pixel resolution (accounts for device pixel ratio)
+    const dpr = window.devicePixelRatio || 1;
     const cw = _chassisCanvas.offsetWidth;
     const ch = _chassisCanvas.offsetHeight;
-    if (_chassisCanvas.width !== cw || _chassisCanvas.height !== ch) {
-      _chassisCanvas.width = cw;
-      _chassisCanvas.height = ch;
+    const pw = Math.round(cw * dpr);
+    const ph = Math.round(ch * dpr);
+    if (_chassisCanvas.width !== pw || _chassisCanvas.height !== ph) {
+      _chassisCanvas.width = pw;
+      _chassisCanvas.height = ph;
     }
 
-    _ctx.clearRect(0, 0, cw, ch);
+    _ctx.imageSmoothingEnabled = true;
+    _ctx.imageSmoothingQuality = 'high';
+    _ctx.clearRect(0, 0, pw, ph);
 
     if (_imgs[a].complete && _imgs[a].naturalWidth) {
       _ctx.globalAlpha = 1;
-      _ctx.drawImage(_imgs[a], 0, 0, cw, ch);
+      _ctx.drawImage(_imgs[a], 0, 0, pw, ph);
     } else { _pendingDraw = value; return; }
 
     if (blend > 0.001 && a !== b && _imgs[b].complete && _imgs[b].naturalWidth) {
       _ctx.globalAlpha = blend;
-      _ctx.drawImage(_imgs[b], 0, 0, cw, ch);
+      _ctx.drawImage(_imgs[b], 0, 0, pw, ph);
       _ctx.globalAlpha = 1;
     }
     _pendingDraw = null;
   }
 
   // Redraw on window resize
-  window.addEventListener('resize', () => { drawChassisFrame(0); });
+  window.addEventListener('resize', () => { drawChassisFrame(window.monofluxTheme || 0); });
 
   // Theme fade slider — crossfades dark chassis ↔ white chassis
   // engage button glow: amber (dark) ↔ blue (light)
@@ -550,12 +568,6 @@ const CHASSIS_FRAMES = [
       // Crossfade: dark canvas base + white PNG overlay via opacity
       drawChassisFrame(0);
       if (lightImg) lightImg.style.opacity = value;
-
-      // Engage glow: amber → blue
-      const r = Math.round(232 + (126 - 232) * value);
-      const g = Math.round(164 + (200 - 164) * value);
-      const b = Math.round(74  + (227 - 74)  * value);
-      document.documentElement.style.setProperty('--btn-glow', 'rgba(' + r + ',' + g + ',' + b + ',0.85)');
 
       window.monofluxTheme = value;
     }
