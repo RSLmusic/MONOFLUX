@@ -16,7 +16,7 @@
       background: url('assets/chassis-cropped.png') center center / cover no-repeat;
     }
 
-    /* ── Reactor ───────────────────────────────────────── */
+    /* ── Reactor ── */
     .reactor {
       position: absolute;
       left: 553px; top: 217px;
@@ -40,175 +40,36 @@
       pointer-events: none; z-index: 2;
     }
 
-    /* ══════════════════════════════════════════════════════
-       KNOB  —  matches reference: 2nd from left, bottom row
-       Outer knurled ring + recessed dark brushed face + blue LED
-       ══════════════════════════════════════════════════════ */
-    .k {
+    /* ── Knob image ── */
+    .ki {
       position: absolute;
-      width: 62px; height: 62px;
+      width: 72px;
+      height: 78px;
       transform: translate(-50%, -50%);
       user-select: none;
+      pointer-events: none;
+      image-rendering: auto;
     }
 
-    /* Outer knurled collar */
-    .k-collar {
-      width: 62px; height: 62px;
-      border-radius: 50%;
-      background:
-        repeating-conic-gradient(
-          rgba(255,255,255,.07) 0deg 3deg,
-          rgba(0,0,0,.72)       3deg 6deg
-        ),
-        radial-gradient(circle at 50% 40%, #222020 0%, #141212 55%, #080606 100%);
-      box-shadow:
-        0 5px 18px rgba(0,0,0,.92),
-        0 2px 5px  rgba(0,0,0,.75),
-        inset 0 1px 0 rgba(255,255,255,.07),
-        inset 0 -1px 0 rgba(0,0,0,.6);
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Blue LED fixed at 12-o'clock on collar */
-    .k-collar::before {
-      content: '';
-      position: absolute;
-      width: 5px; height: 5px;
-      border-radius: 50%;
-      background: #1df;
-      box-shadow: 0 0 8px 3px rgba(0,200,255,.6), 0 0 3px rgba(0,220,255,.95);
-      top: 3px; left: 50%;
-      transform: translateX(-50%);
-      z-index: 4;
-    }
-
-    /* Recessed face — concentric brushed dark aluminum */
-    .k-face {
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      position: relative;
-      background:
-        /* Fine radial brushed lines */
-        repeating-conic-gradient(
-          rgba(255,255,255,.032) 0deg 2.5deg,
-          transparent            2.5deg 5deg
-        ),
-        /* Concentric ring banding */
-        radial-gradient(circle,
-          #1e1c1c 0%,  #1e1c1c 14%,
-          #272525 15%, #272525 17%,
-          #1a1818 18%, #1a1818 34%,
-          #232121 35%, #232121 37%,
-          #181616 38%, #181616 54%,
-          #212020 55%, #212020 57%,
-          #161414 58%, #161414 74%,
-          #1f1d1d 75%, #1f1d1d 76%,
-          #131111 77%, #131111 100%
-        );
-      box-shadow:
-        inset 0 3px 9px rgba(0,0,0,.72),
-        inset 0 -1px 3px rgba(255,255,255,.04),
-        0 0 0 1.5px rgba(0,0,0,.85),
-        0 0 0 2.5px rgba(255,255,255,.038);
-    }
-
-    /* Subtle specular gleam top-left */
-    .k-face::before {
-      content: '';
-      position: absolute; inset: 0; border-radius: 50%;
-      background: radial-gradient(ellipse at 30% 22%, rgba(255,255,255,.13) 0%, transparent 50%);
-    }
-
-    /* Position indicator — small white dot near top of face */
-    .k-face::after {
-      content: '';
-      position: absolute;
-      width: 4px; height: 4px;
-      border-radius: 50%;
-      background: rgba(235,230,225,.9);
-      top: 5px; left: 50%;
-      transform: translateX(-50%);
-    }
-
-    /* ══════════════════════════════════════════════════════
-       ARC KNOB — same style but interactive + SVG arc ring
-       ══════════════════════════════════════════════════════ */
+    /* ── Arc knob wrapper ── */
     .arc-wrap {
       position: absolute;
-      width: 74px; height: 74px;
+      width: 88px; height: 92px;
       transform: translate(-50%, -50%);
       user-select: none;
       cursor: ns-resize;
     }
     .arc-svg {
       position: absolute; top: 0; left: 0;
-      width: 74px; height: 74px;
+      width: 88px; height: 88px;
       pointer-events: none;
+      z-index: 2;
     }
-    /* Collar sits inset by 6px to leave room for arc */
-    .arc-collar {
+    .arc-img {
       position: absolute;
-      top: 6px; left: 6px;
-      width: 62px; height: 62px;
-      border-radius: 50%;
-      background:
-        repeating-conic-gradient(
-          rgba(255,255,255,.07) 0deg 3deg,
-          rgba(0,0,0,.72)       3deg 6deg
-        ),
-        radial-gradient(circle at 50% 40%, #222020 0%, #141212 55%, #080606 100%);
-      box-shadow:
-        0 5px 18px rgba(0,0,0,.92),
-        0 2px 5px  rgba(0,0,0,.75),
-        inset 0 1px 0 rgba(255,255,255,.07),
-        inset 0 -1px 0 rgba(0,0,0,.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .arc-face {
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      position: relative;
+      width: 72px; height: 78px;
+      top: 7px; left: 8px;
       will-change: transform;
-      background:
-        repeating-conic-gradient(
-          rgba(255,255,255,.032) 0deg 2.5deg,
-          transparent            2.5deg 5deg
-        ),
-        radial-gradient(circle,
-          #1e1c1c 0%,  #1e1c1c 14%,
-          #272525 15%, #272525 17%,
-          #1a1818 18%, #1a1818 34%,
-          #232121 35%, #232121 37%,
-          #181616 38%, #181616 54%,
-          #212020 55%, #212020 57%,
-          #161414 58%, #161414 74%,
-          #1f1d1d 75%, #1f1d1d 76%,
-          #131111 77%, #131111 100%
-        );
-      box-shadow:
-        inset 0 3px 9px rgba(0,0,0,.72),
-        inset 0 -1px 3px rgba(255,255,255,.04),
-        0 0 0 1.5px rgba(0,0,0,.85),
-        0 0 0 2.5px rgba(255,255,255,.038);
-    }
-    .arc-face::before {
-      content: '';
-      position: absolute; inset: 0; border-radius: 50%;
-      background: radial-gradient(ellipse at 30% 22%, rgba(255,255,255,.13) 0%, transparent 50%);
-    }
-    /* Rotating indicator dot */
-    .arc-dot {
-      position: absolute;
-      width: 4px; height: 4px;
-      border-radius: 50%;
-      background: rgba(235,230,225,.9);
-      top: 5px; left: 50%;
-      transform: translateX(-50%);
     }
   </style>
 </head>
@@ -224,55 +85,51 @@
   </div>
 
   <!-- ══ LEFT UPPER BAY — 2×2 ══ -->
-  <div class="k" style="left:170px;top:165px"><div class="k-collar"><div class="k-face"></div></div></div>
-  <div class="k" style="left:254px;top:165px"><div class="k-collar"><div class="k-face"></div></div></div>
-  <div class="k" style="left:170px;top:249px"><div class="k-collar"><div class="k-face"></div></div></div>
-  <div class="k" style="left:254px;top:249px"><div class="k-collar"><div class="k-face"></div></div></div>
+  <img class="ki" src="assets/knob.png" style="left:170px;top:165px">
+  <img class="ki" src="assets/knob.png" style="left:254px;top:165px">
+  <img class="ki" src="assets/knob.png" style="left:170px;top:249px">
+  <img class="ki" src="assets/knob.png" style="left:254px;top:249px">
 
   <!-- ══ LEFT LOWER BAY — 2×2 ══ -->
-  <div class="k" style="left:170px;top:513px"><div class="k-collar"><div class="k-face"></div></div></div>
-  <div class="k" style="left:254px;top:513px"><div class="k-collar"><div class="k-face"></div></div></div>
-  <div class="k" style="left:170px;top:597px"><div class="k-collar"><div class="k-face"></div></div></div>
-  <div class="k" style="left:254px;top:597px"><div class="k-collar"><div class="k-face"></div></div></div>
+  <img class="ki" src="assets/knob.png" style="left:170px;top:513px">
+  <img class="ki" src="assets/knob.png" style="left:254px;top:513px">
+  <img class="ki" src="assets/knob.png" style="left:170px;top:597px">
+  <img class="ki" src="assets/knob.png" style="left:254px;top:597px">
 
   <!-- ══ RIGHT UPPER BAY — 2×2 ══ -->
-  <div class="k" style="left:1146px;top:165px"><div class="k-collar"><div class="k-face"></div></div></div>
-  <div class="k" style="left:1230px;top:165px"><div class="k-collar"><div class="k-face"></div></div></div>
-  <div class="k" style="left:1146px;top:249px"><div class="k-collar"><div class="k-face"></div></div></div>
-  <div class="k" style="left:1230px;top:249px"><div class="k-collar"><div class="k-face"></div></div></div>
+  <img class="ki" src="assets/knob.png" style="left:1146px;top:165px">
+  <img class="ki" src="assets/knob.png" style="left:1230px;top:165px">
+  <img class="ki" src="assets/knob.png" style="left:1146px;top:249px">
+  <img class="ki" src="assets/knob.png" style="left:1230px;top:249px">
 
   <!-- ══ RIGHT LOWER BAY — 2×2 ══ -->
-  <div class="k" style="left:1146px;top:513px"><div class="k-collar"><div class="k-face"></div></div></div>
-  <div class="k" style="left:1230px;top:513px"><div class="k-collar"><div class="k-face"></div></div></div>
-  <div class="k" style="left:1146px;top:597px"><div class="k-collar"><div class="k-face"></div></div></div>
-  <div class="k" style="left:1230px;top:597px"><div class="k-collar"><div class="k-face"></div></div></div>
+  <img class="ki" src="assets/knob.png" style="left:1146px;top:513px">
+  <img class="ki" src="assets/knob.png" style="left:1230px;top:513px">
+  <img class="ki" src="assets/knob.png" style="left:1146px;top:597px">
+  <img class="ki" src="assets/knob.png" style="left:1230px;top:597px">
 
   <!-- ══ BOTTOM CENTER BAY — 4 in a row ══ -->
-  <!-- K1 regular -->
-  <div class="k" style="left:580px;top:649px"><div class="k-collar"><div class="k-face"></div></div></div>
+  <!-- K1 -->
+  <img class="ki" src="assets/knob.png" style="left:580px;top:649px">
 
-  <!-- K2 — interactive arc knob (2nd from left) -->
+  <!-- K2 — interactive arc knob -->
   <div class="arc-wrap" id="arc-wrap" style="left:660px;top:649px">
-    <svg class="arc-svg" viewBox="0 0 74 74">
+    <svg class="arc-svg" viewBox="0 0 88 88">
       <!-- Track: 135°→45° clockwise (270° sweep, open at bottom) -->
       <path id="arc-track"
-        d="M 15.58,58.58 A 31,31 0 1,1 58.42,58.58"
+        d="M 18.58,69.58 A 37,37 0 1,1 69.42,69.58"
         fill="none" stroke="rgba(80,78,74,.5)" stroke-width="3.5" stroke-linecap="round"/>
       <!-- Fill: current value -->
       <path id="arc-fill"
         d="" fill="none" stroke="rgba(185,195,215,.75)" stroke-width="3.5" stroke-linecap="round"/>
     </svg>
-    <div class="arc-collar">
-      <div class="arc-face" id="arc-face">
-        <div class="arc-dot"></div>
-      </div>
-    </div>
+    <img class="arc-img" id="arc-face" src="assets/knob.png">
   </div>
 
-  <!-- K3 regular -->
-  <div class="k" style="left:740px;top:649px"><div class="k-collar"><div class="k-face"></div></div></div>
-  <!-- K4 regular -->
-  <div class="k" style="left:820px;top:649px"><div class="k-collar"><div class="k-face"></div></div></div>
+  <!-- K3 -->
+  <img class="ki" src="assets/knob.png" style="left:740px;top:649px">
+  <!-- K4 -->
+  <img class="ki" src="assets/knob.png" style="left:820px;top:649px">
 
 </div><!-- .chassis -->
 
@@ -285,10 +142,10 @@
   tryPlay();
 
   /* ── Arc knob ── */
-  const face   = document.getElementById('arc-face');
-  const fill   = document.getElementById('arc-fill');
-  const R = 31, CX = 37, CY = 37;
-  const START  = 135; // SVG degrees, fixed start (lower-left)
+  const face = document.getElementById('arc-face');
+  const fill = document.getElementById('arc-fill');
+  const R = 37, CX = 44, CY = 44;
+  const START = 135;
 
   let dragging = false, y0 = 0, a0 = 0, aCur = 0;
 
@@ -297,18 +154,18 @@
     aCur = deg;
     face.style.transform = `rotate(${deg}deg)`;
 
-    const svgCur = 270 + deg;          // 270° SVG = 12-o'clock
-    const span   = svgCur - START;     // 0 → 270
+    const svgCur = 270 + deg;
+    const span   = svgCur - START;
 
-    if (span < 0.5) { fill.setAttribute('d',''); return; }
+    if (span < 0.5) { fill.setAttribute('d', ''); return; }
 
-    const sx = CX + R * Math.cos(START  * Math.PI/180);
-    const sy = CY + R * Math.sin(START  * Math.PI/180);
-    const ex = CX + R * Math.cos(svgCur * Math.PI/180);
-    const ey = CY + R * Math.sin(svgCur * Math.PI/180);
+    const sx = CX + R * Math.cos(START  * Math.PI / 180);
+    const sy = CY + R * Math.sin(START  * Math.PI / 180);
+    const ex = CX + R * Math.cos(svgCur * Math.PI / 180);
+    const ey = CY + R * Math.sin(svgCur * Math.PI / 180);
 
     fill.setAttribute('d',
-      `M ${sx.toFixed(2)},${sy.toFixed(2)} A ${R},${R} 0 ${span>180?1:0},1 ${ex.toFixed(2)},${ey.toFixed(2)}`
+      `M ${sx.toFixed(2)},${sy.toFixed(2)} A ${R},${R} 0 ${span > 180 ? 1 : 0},1 ${ex.toFixed(2)},${ey.toFixed(2)}`
     );
   }
 
@@ -321,7 +178,7 @@
   });
   document.addEventListener('mouseup', () => { dragging = false; });
 
-  setAngle(0); // default = 0 (indicator pointing up)
+  setAngle(0);
 </script>
 </body>
 </html>
