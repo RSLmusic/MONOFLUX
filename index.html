@@ -16,93 +16,197 @@
       background: url('assets/chassis-cropped.png') center center / cover no-repeat;
     }
 
-    /* ── Reactor ─────────────────────────── */
+    /* ── Reactor ───────────────────────────────────────── */
     .reactor {
       position: absolute;
-      left: 538px; top: 191px;
-      width: 248px; height: 248px;
-      border-radius: 50%; overflow: hidden;
-      box-shadow:
-        0 0 0 1px rgba(255,120,30,.20),
-        0 0 28px rgba(255,100,20,.15),
-        0 0 60px rgba(255,80,10,.07);
+      left: 553px; top: 217px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      overflow: hidden;
       z-index: 10;
+      box-shadow:
+        0 0 0 1px rgba(255,110,20,.15),
+        0 0 22px rgba(255,90,10,.12),
+        0 0 55px rgba(255,70,0,.06);
     }
-    .reactor video { width: 100%; height: 100%; object-fit: cover; }
+    .reactor video {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center center;
+    }
     .reactor::after {
       content: ''; position: absolute; inset: 0; border-radius: 50%;
-      background: radial-gradient(circle at 50% 50%, transparent 55%, rgba(0,0,0,.35) 80%, rgba(0,0,0,.65) 100%);
+      background: radial-gradient(circle, transparent 50%, rgba(0,0,0,.28) 78%, rgba(0,0,0,.58) 100%);
       pointer-events: none; z-index: 2;
     }
 
-    /* ── Knob base ───────────────────────── */
+    /* ══════════════════════════════════════════════════════
+       KNOB  —  matches reference: 2nd from left, bottom row
+       Outer knurled ring + recessed dark brushed face + blue LED
+       ══════════════════════════════════════════════════════ */
     .k {
       position: absolute;
-      width: 60px; height: 60px;
+      width: 62px; height: 62px;
       transform: translate(-50%, -50%);
       user-select: none;
     }
-    .k-ring {
-      width: 60px; height: 60px;
-      border-radius: 50%;
-      background: repeating-conic-gradient(#1c1b1b 0deg 7deg, #111010 7deg 14deg);
-      box-shadow: 0 3px 9px rgba(0,0,0,.75), 0 0 0 1px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.04);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .k-body {
-      width: 44px; height: 44px;
+
+    /* Outer knurled collar */
+    .k-collar {
+      width: 62px; height: 62px;
       border-radius: 50%;
       background:
-        repeating-conic-gradient(rgba(255,255,255,.02) 0deg 5deg, transparent 5deg 10deg),
-        radial-gradient(ellipse at 38% 30%, #302e2e 0%, #232121 42%, #181616 100%);
-      box-shadow: inset 0 2px 5px rgba(0,0,0,.6), 0 0 0 1px rgba(40,38,38,.5);
+        repeating-conic-gradient(
+          rgba(255,255,255,.07) 0deg 3deg,
+          rgba(0,0,0,.72)       3deg 6deg
+        ),
+        radial-gradient(circle at 50% 40%, #222020 0%, #141212 55%, #080606 100%);
+      box-shadow:
+        0 5px 18px rgba(0,0,0,.92),
+        0 2px 5px  rgba(0,0,0,.75),
+        inset 0 1px 0 rgba(255,255,255,.07),
+        inset 0 -1px 0 rgba(0,0,0,.6);
       position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .k-line {
+
+    /* Blue LED fixed at 12-o'clock on collar */
+    .k-collar::before {
+      content: '';
       position: absolute;
-      width: 3px; height: 9px;
-      background: rgba(210,210,210,.82);
-      border-radius: 2px;
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #1df;
+      box-shadow: 0 0 8px 3px rgba(0,200,255,.6), 0 0 3px rgba(0,220,255,.95);
+      top: 3px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 4;
+    }
+
+    /* Recessed face — concentric brushed dark aluminum */
+    .k-face {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      position: relative;
+      background:
+        /* Fine radial brushed lines */
+        repeating-conic-gradient(
+          rgba(255,255,255,.032) 0deg 2.5deg,
+          transparent            2.5deg 5deg
+        ),
+        /* Concentric ring banding */
+        radial-gradient(circle,
+          #1e1c1c 0%,  #1e1c1c 14%,
+          #272525 15%, #272525 17%,
+          #1a1818 18%, #1a1818 34%,
+          #232121 35%, #232121 37%,
+          #181616 38%, #181616 54%,
+          #212020 55%, #212020 57%,
+          #161414 58%, #161414 74%,
+          #1f1d1d 75%, #1f1d1d 76%,
+          #131111 77%, #131111 100%
+        );
+      box-shadow:
+        inset 0 3px 9px rgba(0,0,0,.72),
+        inset 0 -1px 3px rgba(255,255,255,.04),
+        0 0 0 1.5px rgba(0,0,0,.85),
+        0 0 0 2.5px rgba(255,255,255,.038);
+    }
+
+    /* Subtle specular gleam top-left */
+    .k-face::before {
+      content: '';
+      position: absolute; inset: 0; border-radius: 50%;
+      background: radial-gradient(ellipse at 30% 22%, rgba(255,255,255,.13) 0%, transparent 50%);
+    }
+
+    /* Position indicator — small white dot near top of face */
+    .k-face::after {
+      content: '';
+      position: absolute;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: rgba(235,230,225,.9);
       top: 5px; left: 50%;
       transform: translateX(-50%);
     }
 
-    /* ── Arc knob (interactive) ──────────── */
+    /* ══════════════════════════════════════════════════════
+       ARC KNOB — same style but interactive + SVG arc ring
+       ══════════════════════════════════════════════════════ */
     .arc-wrap {
       position: absolute;
-      width: 72px; height: 72px;
+      width: 74px; height: 74px;
       transform: translate(-50%, -50%);
-      user-select: none; cursor: ns-resize;
+      user-select: none;
+      cursor: ns-resize;
     }
     .arc-svg {
       position: absolute; top: 0; left: 0;
-      width: 72px; height: 72px;
+      width: 74px; height: 74px;
       pointer-events: none;
     }
-    .arc-ring {
+    /* Collar sits inset by 6px to leave room for arc */
+    .arc-collar {
       position: absolute;
       top: 6px; left: 6px;
-      width: 60px; height: 60px;
-      border-radius: 50%;
-      background: repeating-conic-gradient(#1c1b1b 0deg 7deg, #111010 7deg 14deg);
-      box-shadow: 0 3px 9px rgba(0,0,0,.75), 0 0 0 1px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.04);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .arc-body {
-      width: 44px; height: 44px;
+      width: 62px; height: 62px;
       border-radius: 50%;
       background:
-        repeating-conic-gradient(rgba(255,255,255,.02) 0deg 5deg, transparent 5deg 10deg),
-        radial-gradient(ellipse at 38% 30%, #302e2e 0%, #232121 42%, #181616 100%);
-      box-shadow: inset 0 2px 5px rgba(0,0,0,.6), 0 0 0 1px rgba(40,38,38,.5);
+        repeating-conic-gradient(
+          rgba(255,255,255,.07) 0deg 3deg,
+          rgba(0,0,0,.72)       3deg 6deg
+        ),
+        radial-gradient(circle at 50% 40%, #222020 0%, #141212 55%, #080606 100%);
+      box-shadow:
+        0 5px 18px rgba(0,0,0,.92),
+        0 2px 5px  rgba(0,0,0,.75),
+        inset 0 1px 0 rgba(255,255,255,.07),
+        inset 0 -1px 0 rgba(0,0,0,.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .arc-face {
+      width: 40px; height: 40px;
+      border-radius: 50%;
       position: relative;
       will-change: transform;
+      background:
+        repeating-conic-gradient(
+          rgba(255,255,255,.032) 0deg 2.5deg,
+          transparent            2.5deg 5deg
+        ),
+        radial-gradient(circle,
+          #1e1c1c 0%,  #1e1c1c 14%,
+          #272525 15%, #272525 17%,
+          #1a1818 18%, #1a1818 34%,
+          #232121 35%, #232121 37%,
+          #181616 38%, #181616 54%,
+          #212020 55%, #212020 57%,
+          #161414 58%, #161414 74%,
+          #1f1d1d 75%, #1f1d1d 76%,
+          #131111 77%, #131111 100%
+        );
+      box-shadow:
+        inset 0 3px 9px rgba(0,0,0,.72),
+        inset 0 -1px 3px rgba(255,255,255,.04),
+        0 0 0 1.5px rgba(0,0,0,.85),
+        0 0 0 2.5px rgba(255,255,255,.038);
     }
-    .arc-line {
+    .arc-face::before {
+      content: '';
+      position: absolute; inset: 0; border-radius: 50%;
+      background: radial-gradient(ellipse at 30% 22%, rgba(255,255,255,.13) 0%, transparent 50%);
+    }
+    /* Rotating indicator dot */
+    .arc-dot {
       position: absolute;
-      width: 3px; height: 9px;
-      background: rgba(210,210,210,.82);
-      border-radius: 2px;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: rgba(235,230,225,.9);
       top: 5px; left: 50%;
       transform: translateX(-50%);
     }
@@ -111,119 +215,113 @@
 <body>
 <div class="chassis">
 
-  <!-- Reactor -->
+  <!-- ── Reactor ── -->
   <div class="reactor">
     <video id="rv" autoplay loop muted playsinline preload="auto">
-      <source src="assets/reactor.webm" type="video/webm">
-      <source src="assets/reactor.mp4" type="video/mp4">
+      <source src="assets/reactor-fire.webm" type="video/webm">
+      <source src="assets/reactor.mp4"       type="video/mp4">
     </video>
   </div>
 
-  <!-- LEFT UPPER BAY — 2×2 -->
-  <div class="k" style="left:168px;top:164px"><div class="k-ring"><div class="k-body"><div class="k-line"></div></div></div></div>
-  <div class="k" style="left:253px;top:164px"><div class="k-ring"><div class="k-body"><div class="k-line"></div></div></div></div>
-  <div class="k" style="left:168px;top:249px"><div class="k-ring"><div class="k-body"><div class="k-line"></div></div></div></div>
-  <div class="k" style="left:253px;top:249px"><div class="k-ring"><div class="k-body"><div class="k-line"></div></div></div></div>
+  <!-- ══ LEFT UPPER BAY — 2×2 ══ -->
+  <div class="k" style="left:170px;top:165px"><div class="k-collar"><div class="k-face"></div></div></div>
+  <div class="k" style="left:254px;top:165px"><div class="k-collar"><div class="k-face"></div></div></div>
+  <div class="k" style="left:170px;top:249px"><div class="k-collar"><div class="k-face"></div></div></div>
+  <div class="k" style="left:254px;top:249px"><div class="k-collar"><div class="k-face"></div></div></div>
 
-  <!-- LEFT LOWER BAY — 2×2 -->
-  <div class="k" style="left:168px;top:507px"><div class="k-ring"><div class="k-body"><div class="k-line"></div></div></div></div>
-  <div class="k" style="left:253px;top:507px"><div class="k-ring"><div class="k-body"><div class="k-line"></div></div></div></div>
-  <div class="k" style="left:168px;top:592px"><div class="k-ring"><div class="k-body"><div class="k-line"></div></div></div></div>
-  <div class="k" style="left:253px;top:592px"><div class="k-ring"><div class="k-body"><div class="k-line"></div></div></div></div>
+  <!-- ══ LEFT LOWER BAY — 2×2 ══ -->
+  <div class="k" style="left:170px;top:513px"><div class="k-collar"><div class="k-face"></div></div></div>
+  <div class="k" style="left:254px;top:513px"><div class="k-collar"><div class="k-face"></div></div></div>
+  <div class="k" style="left:170px;top:597px"><div class="k-collar"><div class="k-face"></div></div></div>
+  <div class="k" style="left:254px;top:597px"><div class="k-collar"><div class="k-face"></div></div></div>
 
-  <!-- RIGHT UPPER BAY — 2×2 -->
-  <div class="k" style="left:1148px;top:164px"><div class="k-ring"><div class="k-body"><div class="k-line"></div></div></div></div>
-  <div class="k" style="left:1233px;top:164px"><div class="k-ring"><div class="k-body"><div class="k-line"></div></div></div></div>
-  <div class="k" style="left:1148px;top:249px"><div class="k-ring"><div class="k-body"><div class="k-line"></div></div></div></div>
-  <div class="k" style="left:1233px;top:249px"><div class="k-ring"><div class="k-body"><div class="k-line"></div></div></div></div>
+  <!-- ══ RIGHT UPPER BAY — 2×2 ══ -->
+  <div class="k" style="left:1146px;top:165px"><div class="k-collar"><div class="k-face"></div></div></div>
+  <div class="k" style="left:1230px;top:165px"><div class="k-collar"><div class="k-face"></div></div></div>
+  <div class="k" style="left:1146px;top:249px"><div class="k-collar"><div class="k-face"></div></div></div>
+  <div class="k" style="left:1230px;top:249px"><div class="k-collar"><div class="k-face"></div></div></div>
 
-  <!-- RIGHT LOWER BAY — 2×2 -->
-  <div class="k" style="left:1148px;top:507px"><div class="k-ring"><div class="k-body"><div class="k-line"></div></div></div></div>
-  <div class="k" style="left:1233px;top:507px"><div class="k-ring"><div class="k-body"><div class="k-line"></div></div></div></div>
-  <div class="k" style="left:1148px;top:592px"><div class="k-ring"><div class="k-body"><div class="k-line"></div></div></div></div>
-  <div class="k" style="left:1233px;top:592px"><div class="k-ring"><div class="k-body"><div class="k-line"></div></div></div></div>
+  <!-- ══ RIGHT LOWER BAY — 2×2 ══ -->
+  <div class="k" style="left:1146px;top:513px"><div class="k-collar"><div class="k-face"></div></div></div>
+  <div class="k" style="left:1230px;top:513px"><div class="k-collar"><div class="k-face"></div></div></div>
+  <div class="k" style="left:1146px;top:597px"><div class="k-collar"><div class="k-face"></div></div></div>
+  <div class="k" style="left:1230px;top:597px"><div class="k-collar"><div class="k-face"></div></div></div>
 
-  <!-- BOTTOM CENTER BAY — 4 in a row -->
-  <!-- K1: regular -->
-  <div class="k" style="left:573px;top:649px"><div class="k-ring"><div class="k-body"><div class="k-line"></div></div></div></div>
+  <!-- ══ BOTTOM CENTER BAY — 4 in a row ══ -->
+  <!-- K1 regular -->
+  <div class="k" style="left:580px;top:649px"><div class="k-collar"><div class="k-face"></div></div></div>
 
-  <!-- K2: interactive arc knob (2nd from left) -->
-  <div class="arc-wrap" id="arc-wrap" style="left:655px;top:649px">
-    <svg class="arc-svg" viewBox="0 0 72 72">
-      <!-- open-bottom track: 135° → 45° clockwise, 270° sweep, gap at bottom -->
+  <!-- K2 — interactive arc knob (2nd from left) -->
+  <div class="arc-wrap" id="arc-wrap" style="left:660px;top:649px">
+    <svg class="arc-svg" viewBox="0 0 74 74">
+      <!-- Track: 135°→45° clockwise (270° sweep, open at bottom) -->
       <path id="arc-track"
-        d="M 14.79,57.21 A 30,30 0 1,1 57.21,57.21"
-        fill="none" stroke="rgba(90,88,85,.55)" stroke-width="3.5" stroke-linecap="round"/>
-      <!-- fill arc (current value, starts at 135°, ends at current angle) -->
+        d="M 15.58,58.58 A 31,31 0 1,1 58.42,58.58"
+        fill="none" stroke="rgba(80,78,74,.5)" stroke-width="3.5" stroke-linecap="round"/>
+      <!-- Fill: current value -->
       <path id="arc-fill"
-        d=""
-        fill="none" stroke="rgba(180,190,210,.72)" stroke-width="3.5" stroke-linecap="round"/>
+        d="" fill="none" stroke="rgba(185,195,215,.75)" stroke-width="3.5" stroke-linecap="round"/>
     </svg>
-    <div class="arc-ring">
-      <div class="arc-body" id="arc-body">
-        <div class="arc-line"></div>
+    <div class="arc-collar">
+      <div class="arc-face" id="arc-face">
+        <div class="arc-dot"></div>
       </div>
     </div>
   </div>
 
-  <!-- K3: regular -->
-  <div class="k" style="left:737px;top:649px"><div class="k-ring"><div class="k-body"><div class="k-line"></div></div></div></div>
+  <!-- K3 regular -->
+  <div class="k" style="left:740px;top:649px"><div class="k-collar"><div class="k-face"></div></div></div>
+  <!-- K4 regular -->
+  <div class="k" style="left:820px;top:649px"><div class="k-collar"><div class="k-face"></div></div></div>
 
-  <!-- K4: regular -->
-  <div class="k" style="left:819px;top:649px"><div class="k-ring"><div class="k-body"><div class="k-line"></div></div></div></div>
-
-</div>
+</div><!-- .chassis -->
 
 <script>
   /* ── Video autoplay ── */
   const rv = document.getElementById('rv');
-  const play = () => { if (rv.paused) rv.play().catch(() => {}); };
-  rv.addEventListener('canplay', play);
-  rv.addEventListener('loadeddata', play);
-  play();
+  const tryPlay = () => { if (rv.paused) rv.play().catch(() => {}); };
+  rv.addEventListener('canplay', tryPlay);
+  rv.addEventListener('loadeddata', tryPlay);
+  tryPlay();
 
   /* ── Arc knob ── */
-  const arcBody = document.getElementById('arc-body');
-  const arcFill = document.getElementById('arc-fill');
-  const R = 30, CX = 36, CY = 36;
-  const START_DEG = 135; // SVG degrees, fixed arc start (lower-left)
+  const face   = document.getElementById('arc-face');
+  const fill   = document.getElementById('arc-fill');
+  const R = 31, CX = 37, CY = 37;
+  const START  = 135; // SVG degrees, fixed start (lower-left)
 
-  let isDrag = false, dragY0 = 0, angle0 = 0, angleCur = 0;
+  let dragging = false, y0 = 0, a0 = 0, aCur = 0;
 
   function setAngle(deg) {
     deg = Math.max(-135, Math.min(135, deg));
-    angleCur = deg;
-    arcBody.style.transform = `rotate(${deg}deg)`;
+    aCur = deg;
+    face.style.transform = `rotate(${deg}deg)`;
 
-    // SVG current position: 270° = up (default), shift by deg
-    const curSvgDeg = 270 + deg;
-    const span = curSvgDeg - START_DEG; // 0..270
+    const svgCur = 270 + deg;          // 270° SVG = 12-o'clock
+    const span   = svgCur - START;     // 0 → 270
 
-    if (span < 1) { arcFill.setAttribute('d', ''); return; }
+    if (span < 0.5) { fill.setAttribute('d',''); return; }
 
-    const sx = CX + R * Math.cos(START_DEG * Math.PI / 180);
-    const sy = CY + R * Math.sin(START_DEG * Math.PI / 180);
-    const ex = CX + R * Math.cos(curSvgDeg * Math.PI / 180);
-    const ey = CY + R * Math.sin(curSvgDeg * Math.PI / 180);
-    const large = span > 180 ? 1 : 0;
+    const sx = CX + R * Math.cos(START  * Math.PI/180);
+    const sy = CY + R * Math.sin(START  * Math.PI/180);
+    const ex = CX + R * Math.cos(svgCur * Math.PI/180);
+    const ey = CY + R * Math.sin(svgCur * Math.PI/180);
 
-    arcFill.setAttribute('d',
-      `M ${sx.toFixed(2)},${sy.toFixed(2)} A ${R},${R} 0 ${large},1 ${ex.toFixed(2)},${ey.toFixed(2)}`
+    fill.setAttribute('d',
+      `M ${sx.toFixed(2)},${sy.toFixed(2)} A ${R},${R} 0 ${span>180?1:0},1 ${ex.toFixed(2)},${ey.toFixed(2)}`
     );
   }
 
-  arcBody.addEventListener('mousedown', e => {
-    isDrag = true; dragY0 = e.clientY; angle0 = angleCur;
-    e.preventDefault();
+  face.addEventListener('mousedown', e => {
+    dragging = true; y0 = e.clientY; a0 = aCur; e.preventDefault();
   });
   document.addEventListener('mousemove', e => {
-    if (!isDrag) return;
-    setAngle(angle0 + (dragY0 - e.clientY) * 0.85);
+    if (!dragging) return;
+    setAngle(a0 + (y0 - e.clientY) * 0.85);
   });
-  document.addEventListener('mouseup', () => { isDrag = false; });
+  document.addEventListener('mouseup', () => { dragging = false; });
 
-  // Default position = 0 (indicator pointing up, half fill)
-  setAngle(0);
+  setAngle(0); // default = 0 (indicator pointing up)
 </script>
 </body>
 </html>
